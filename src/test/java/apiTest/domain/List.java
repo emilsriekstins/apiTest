@@ -8,7 +8,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class List {
     @JsonProperty("id")
-    private String listID;
+    private String id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("idBoard")

@@ -9,7 +9,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 
 import static apiTest.clients.TrelloClient.*;
 import static apiTest.constants.ProjectConstants.BOARD_ID;
@@ -21,7 +20,7 @@ public class TrelloSteps {
         Response response = getBoardInfo(BOARD_ID);
         Board board = response.as(Board.class);
 
-        Assertions.assertThat(board.getBoardID())
+        Assertions.assertThat(board.getId())
                 .as("We assert that the board ID is correct")
                 .isEqualTo(BOARD_ID);
 
@@ -42,17 +41,18 @@ public class TrelloSteps {
         Assertions.assertThat(TestCaseContext.getBoard().getName())
                 .as("We assert that the board name was updated")
                 .isEqualTo(title);
-
     }
 
     @Then("I add a list with a name {string} to the board")
     public void iAddAListWithANameToTheBoard(String listName) {
-        Response response = createList(listName, TestCaseContext.getBoard().getBoardID());
+        Response response = createList(listName, TestCaseContext.getBoard().getId());
         List list = response.as(List.class);
         TestCaseContext.setList(list);
 
         Assertions.assertThat(list.getName())
                 .as("Test that the list was created with correct name")
                 .isEqualTo(listName);
+
+        TestCaseContext.getScenario().log(list.getId());
     }
 }
