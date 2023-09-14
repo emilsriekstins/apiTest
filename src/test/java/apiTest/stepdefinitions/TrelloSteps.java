@@ -1,15 +1,17 @@
 package apiTest.stepdefinitions;
 
 import apiTest.domain.Board;
+import apiTest.domain.List;
+import apiTest.helpers.TestCaseContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 
-import static apiTest.clients.TrelloClient.getBoardInfo;
-import static apiTest.clients.TrelloClient.updateBoardInfo;
+import static apiTest.clients.TrelloClient.*;
 import static apiTest.constants.ProjectConstants.BOARD_ID;
 import static apiTest.constants.ProjectConstants.BOARD_NAME;
 
@@ -18,8 +20,8 @@ public class TrelloSteps {
     public void getBoardDataAndCheckInfo() {
         Response response = getBoardInfo(BOARD_ID);
         Board board = response.as(Board.class);
-        
-        Assertions.assertThat(board.getId())
+
+        Assertions.assertThat(board.getBoardID())
                 .as("We assert that the board ID is correct")
                 .isEqualTo(BOARD_ID);
 
@@ -30,18 +32,27 @@ public class TrelloSteps {
 
     @When("I change the board title to {string}")
     public void iChangeTheBoardTitleTo(String title) {
-        Response response = updateBoardInfo(BOARD_NAME ,BOARD_ID);
+        Response response = updateBoardInfo(title, BOARD_ID);
+        Board board = response.as(Board.class);
+        TestCaseContext.setBoard(board);
     }
 
     @And("I check that the board name was updated to {string}")
     public void iCheckThatTheBoardNameWasUpdatedTo(String title) {
-        // TODO add api calls
-        System.out.println("The 3rd step was executed");
+        Assertions.assertThat(TestCaseContext.getBoard().getName())
+                .as("We assert that the board name was updated")
+                .isEqualTo(title);
+
     }
 
     @Then("I add a list with a name {string} to the board")
     public void iAddAListWithANameToTheBoard(String listName) {
-        // TODO add api calls
-        System.out.println("The 4th step was executed");
+        Response response = createList(listName, TestCaseContext.getBoard().getBoardID());
+        List list = response.as(List.class);
+        TestCaseContext.setList(list);
+
+        Assertions.assertThat(list.getName())
+                .as("Test that the list was created with correct name")
+                .isEqualTo(listName);
     }
 }

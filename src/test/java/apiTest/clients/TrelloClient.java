@@ -33,4 +33,33 @@ public class TrelloClient {
                 .statusCode(200)
                 .extract().response();
     }
+
+    public static Response createList(String listName, String boardID) {
+        return RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("key", API_KEY)
+                .queryParam("token", API_TOKEN)
+                .queryParam("name", listName)
+                .queryParam("idBoard", boardID)
+                .when()
+                .post("https://api.trello.com/1/lists")
+                .then().log().all()
+                .statusCode(200)
+                .extract().response();
+    }
+
+    public static Response deleteList(String listID) {
+        return RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("key", API_KEY)
+                .queryParam("token", API_TOKEN)
+                .queryParam("value", true)
+                .when()
+                .put("https://api.trello.com/1/lists/" + listID + "/closed")
+                .then().log().all()
+                .statusCode(200)
+                .extract().response();
+    }
 }
